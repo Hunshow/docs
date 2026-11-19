@@ -66,7 +66,9 @@ config.yaml          唯一配置入口（密钥、模型地址、脱敏规则�
 
 ## 7. 线上部署（已上线）
 
-演示实例：<https://clinic-triage-agent-v2.app.workbuddy.host/?sharecode=UWRRIQSA2U>
+演示实例：<https://clinic-triage-agent-v2-32190.app.workbuddy.host/?sharecode=FLYICY2G52>
+
+> 2026-11-19 更新：修复"我的预约与预约信息无关联"问题（预约记录绑定登录账号归属），演示种子数据医生/科室多样化。
 
 部署方式与本地运行共用同一份代码，区别只有启动时是否注入 `PORT` 环境变量：
 
