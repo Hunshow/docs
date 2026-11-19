@@ -1,0 +1,6 @@
+# 依赖清单：仅安装实现既定技术栈所需的最小依赖，不引入额外中间件
+fastapi>=0.110          # Web 工程框架（技术栈指定 FastAPI）
+uvicorn[standard]>=0.29 # FastAPI 官方推荐的 ASGI 服务器
+pyyaml>=6.0             # 读取 config.yaml 统一配置
+httpx>=0.27             # 调用本地 Ollama HTTP API
+jieba>=0.42             # 中文分词：RAG 检索（BM25）与知识图谱实体抽取

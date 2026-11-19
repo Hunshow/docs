@@ -1,0 +1,296 @@
+[
+  {
+    "s": "分诊推荐",
+    "p": "必须",
+    "o": "人工确认",
+    "source": "triage_rules.md"
+  },
+  {
+    "s": "分诊推荐",
+    "p": "不得",
+    "o": "覆盖原记录",
+    "source": "triage_rules.md"
+  },
+  {
+    "s": "急症识别",
+    "p": "全部转人工",
+    "o": "医护复核",
+    "source": "triage_rules.md"
+  },
+  {
+    "s": "紧急症状",
+    "p": "优先级高于",
+    "o": "预约顺序",
+    "source": "triage_rules.md"
+  },
+  {
+    "s": "歧义记录",
+    "p": "进入",
+    "o": "人工修复队列",
+    "source": "triage_rules.md"
+  },
+  {
+    "s": "歧义记录",
+    "p": "禁止进入",
+    "o": "自动推荐样本",
+    "source": "triage_rules.md"
+  },
+  {
+    "s": "排班未同步",
+    "p": "触发",
+    "o": "转人工",
+    "source": "escalation_rules.md"
+  },
+  {
+    "s": "资料缺少依据",
+    "p": "触发",
+    "o": "转人工",
+    "source": "escalation_rules.md"
+  },
+  {
+    "s": "版本冲突",
+    "p": "触发",
+    "o": "转人工",
+    "source": "escalation_rules.md"
+  },
+  {
+    "s": "系统不可用",
+    "p": "触发",
+    "o": "转人工",
+    "source": "escalation_rules.md"
+  },
+  {
+    "s": "转人工",
+    "p": "必须标注",
+    "o": "触发原因",
+    "source": "escalation_rules.md"
+  },
+  {
+    "s": "转人工",
+    "p": "必须标注",
+    "o": "接手人",
+    "source": "escalation_rules.md"
+  },
+  {
+    "s": "转人工",
+    "p": "必须标注",
+    "o": "确认时间",
+    "source": "escalation_rules.md"
+  },
+  {
+    "s": "排班管理员",
+    "p": "核对",
+    "o": "异常建议",
+    "source": "escalation_rules.md"
+  },
+  {
+    "s": "超时限异常",
+    "p": "升级至",
+    "o": "门诊运营主任",
+    "source": "escalation_rules.md"
+  },
+  {
+    "s": "接口中断",
+    "p": "使用",
+    "o": "带时间戳只读快照",
+    "source": "escalation_rules.md"
+  },
+  {
+    "s": "重连补齐",
+    "p": "按",
+    "o": "业务编号去重",
+    "source": "escalation_rules.md"
+  },
+  {
+    "s": "每次建议",
+    "p": "保留",
+    "o": "业务编号",
+    "source": "audit_and_privacy.md"
+  },
+  {
+    "s": "每次建议",
+    "p": "保留",
+    "o": "资料版本",
+    "source": "audit_and_privacy.md"
+  },
+  {
+    "s": "每次建议",
+    "p": "保留",
+    "o": "事实引用",
+    "source": "audit_and_privacy.md"
+  },
+  {
+    "s": "每次建议",
+    "p": "保留",
+    "o": "签核人",
+    "source": "audit_and_privacy.md"
+  },
+  {
+    "s": "敏感信息",
+    "p": "输出前",
+    "o": "脱敏",
+    "source": "audit_and_privacy.md"
+  },
+  {
+    "s": "业务数据",
+    "p": "保存于",
+    "o": "本地",
+    "source": "audit_and_privacy.md"
+  },
+  {
+    "s": "模型推理",
+    "p": "部署于",
+    "o": "本地Ollama",
+    "source": "audit_and_privacy.md"
+  },
+  {
+    "s": "等待时间口径",
+    "p": "包含",
+    "o": "到院口径",
+    "source": "audit_and_privacy.md"
+  },
+  {
+    "s": "等待时间口径",
+    "p": "包含",
+    "o": "签到口径",
+    "source": "audit_and_privacy.md"
+  },
+  {
+    "s": "等待时间口径",
+    "p": "包含",
+    "o": "预约时间口径",
+    "source": "audit_and_privacy.md"
+  },
+  {
+    "s": "签到重复",
+    "p": "属于",
+    "o": "数据质量问题",
+    "source": "triage_rules.md"
+  },
+  {
+    "s": "叫号遗漏",
+    "p": "属于",
+    "o": "数据质量问题",
+    "source": "triage_rules.md"
+  },
+  {
+    "s": "audit_and_privacy",
+    "p": "包含规则",
+    "o": "审计留痕要素",
+    "source": "audit_and_privacy"
+  },
+  {
+    "s": "audit_and_privacy",
+    "p": "包含规则",
+    "o": "权限隔离",
+    "source": "audit_and_privacy"
+  },
+  {
+    "s": "audit_and_privacy",
+    "p": "包含规则",
+    "o": "留存期限",
+    "source": "audit_and_privacy"
+  },
+  {
+    "s": "audit_and_privacy",
+    "p": "包含规则",
+    "o": "数据本地化",
+    "source": "audit_and_privacy"
+  },
+  {
+    "s": "audit_and_privacy",
+    "p": "包含规则",
+    "o": "等待时间口径",
+    "source": "audit_and_privacy"
+  },
+  {
+    "s": "escalation_rules",
+    "p": "包含规则",
+    "o": "四类兜底场景",
+    "source": "escalation_rules"
+  },
+  {
+    "s": "escalation_rules",
+    "p": "包含规则",
+    "o": "转人工三要素",
+    "source": "escalation_rules"
+  },
+  {
+    "s": "escalation_rules",
+    "p": "包含规则",
+    "o": "处理路径",
+    "source": "escalation_rules"
+  },
+  {
+    "s": "escalation_rules",
+    "p": "包含规则",
+    "o": "接口中断处理",
+    "source": "escalation_rules"
+  },
+  {
+    "s": "flow_and_notify_rules",
+    "p": "包含规则",
+    "o": "# 流量预判与协同提醒规则",
+    "source": "flow_and_notify_rules"
+  },
+  {
+    "s": "flow_and_notify_rules",
+    "p": "包含规则",
+    "o": "流量预判口径",
+    "source": "flow_and_notify_rules"
+  },
+  {
+    "s": "flow_and_notify_rules",
+    "p": "包含规则",
+    "o": "高峰预警的处置边界",
+    "source": "flow_and_notify_rules"
+  },
+  {
+    "s": "flow_and_notify_rules",
+    "p": "包含规则",
+    "o": "协同提醒的发送约束",
+    "source": "flow_and_notify_rules"
+  },
+  {
+    "s": "flow_and_notify_rules",
+    "p": "包含规则",
+    "o": "异常升级的三要素",
+    "source": "flow_and_notify_rules"
+  },
+  {
+    "s": "flow_and_notify_rules",
+    "p": "包含规则",
+    "o": "提醒与留痕的关系",
+    "source": "flow_and_notify_rules"
+  },
+  {
+    "s": "triage_rules",
+    "p": "包含规则",
+    "o": "# 分诊规则与人工确认边界",
+    "source": "triage_rules"
+  },
+  {
+    "s": "triage_rules",
+    "p": "包含规则",
+    "o": "范围边界",
+    "source": "triage_rules"
+  },
+  {
+    "s": "triage_rules",
+    "p": "包含规则",
+    "o": "临床优先级红线",
+    "source": "triage_rules"
+  },
+  {
+    "s": "triage_rules",
+    "p": "包含规则",
+    "o": "迟到与加号处理",
+    "source": "triage_rules"
+  },
+  {
+    "s": "triage_rules",
+    "p": "包含规则",
+    "o": "数据质量门槛",
+    "source": "triage_rules"
+  }
+]

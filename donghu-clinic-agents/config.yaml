@@ -1,0 +1,67 @@
+# ==============================================================================
+# 东湖门诊中心 · 门诊预约与分诊协作智能体系统 · 全局配置
+# 规范约束：所有密钥、模型地址、路径等敏感/环境相关配置只能写在这里，禁止写死在代码里
+# ==============================================================================
+
+app:                                  # 应用基础配置段
+  name: "东湖门诊预约与分诊协作智能体系统"   # 系统名称，用于接口元信息与审计标识
+  host: "127.0.0.1"                   # 服务监听地址：仅本机回环，符合"数据本地保存、不对外上传"红线
+  port: 8310                          # 服务监听端口
+  debug: true                         # 调试开关：生产部署前必须改为 false
+
+security:                             # 安全配置段（演示用途的密钥，生产环境须替换并独立保管）
+  secret_key: "donghu-demo-secret-key-2026"   # 令牌签名密钥：用于 HMAC 签发/校验登录令牌
+  token_expire_minutes: 480           # 令牌有效期（分钟）：8 小时，覆盖一个班次
+  audit_log_path: "data/audit/audit.jsonl"    # 审计留痕文件：JSONL 追加写，供质控重建处理链
+  audit_retention_days: 90            # 审计留存期限：90 天为暂定值，真实期限须按组织规则另行确定
+  mask:                               # 敏感信息脱敏规则：未列出的字段原样输出
+    name: "name"                      # 姓名字段：输出为 姓+*（如 张*）
+    phone: "phone"                    # 手机号字段：输出为 前3位+****+后4位
+    id_card: "id_card"                # 身份证字段：仅保留前4后2位，其余打码
+    medical_no: "medical_no"          # 病历号字段：仅保留后4位
+
+ollama:                               # Ollama 本地大模型配置段：模型全程本地推理，不出公网
+  base_url: "http://127.0.0.1:11434"  # Ollama 服务地址：本地部署，禁止指向云端地址
+  chat_model: "qwen2.5:3b"            # 对话/推理模型：按本机资源选择，可替换为其他本地模型
+  embed_model: "nomic-embed-text"     # 向量化模型：用于 RAG 语义检索
+  timeout_seconds: 10                 # 调用超时：超时即降级为规则推理，不阻塞业务
+  fallback_to_rules: true             # 降级开关：模型不可用时启用确定性规则兜底（保证系统可用性）
+
+rag:                                  # RAG 知识库配置段
+  docs_dir: "data/kb"                 # 知识库文档目录：存放分诊规则/兜底场景/审计要素等制度文档
+  graph_path: "data/kb/knowledge_graph.json"  # 知识图谱持久化文件：三元组 JSON
+  index_path: "data/kb/index.json"    # 检索索引持久化文件：分块 + BM25 词频
+  top_k: 4                            # 每次检索返回的参考条数：作为智能体建议的事实引用
+
+hermes:                               # Hermes 智能体框架配置段
+  max_steps: 4                        # 单次任务最大推理步数：防止循环失控
+  agents:                             # 智能体清单：职责边界一一对应业务需求
+    - name: "appointment_verifier"    # 预约核验智能体：核验号源/排班/签到一致性
+      role: "verifier"                # 智能体角色标识
+    - name: "flow_forecaster"         # 流量预判智能体：基于队列与历史预判候诊压力
+      role: "forecaster"
+    - name: "triage_advisor"          # 动态分诊推荐智能体：只出推荐，不落终审
+      role: "advisor"
+    - name: "collab_notifier"         # 协同提醒智能体：向医护/患者发送提醒与升级
+      role: "notifier"
+
+demo_users:                           # 演示账号段：仅试点联调用，生产环境必须接入统一身份认证
+  - username: "patient01"             # 患者：可预约、查看进度、接收提醒
+    password: "patient-pwd-01"        # 患者口令（演示值）
+    role: "patient"                   # 角色标识：决定 RBAC 权限范围
+    display_name: "张三"               # 展示名（脱敏后输出）
+  - username: "nurse01"               # 分诊/护士：核验、看队列、确认分诊推荐、发通知
+    password: "nurse-pwd-01"
+    role: "nurse"
+    display_name: "林亦舟"
+  - username: "doctor01"              # 科室医护：看分配队列、就诊信息、流量预警，可反馈异常
+    password: "doctor-pwd-01"
+    role: "dept_staff"
+    display_name: "王济民"
+  - username: "admin01"               # 管理员：配置规则、监控、统计、权限管理
+    password: "admin-pwd-01"
+    role: "admin"
+    display_name: "系统管理员"
+
+mock_data:                            # 模拟业务数据段：对接真实 HIS/叫号系统前的占位数据
+  appointments_file: "data/mock_appointments.json"  # 预约/队列/排班模拟数据文件

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<!-- 东湖门诊中心 · 门诊预约与分诊协作智能体系统 · MVP 演示界面 -->
+<!-- 设计约束：单页应用，纯原生 HTML/CSS/JS，不引入任何外部 CDN（数据不出本机） -->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>东湖门诊 · 预约与分诊协作</title>
+  <link rel="stylesheet" href="./styles.css" />  <!-- 样式表：同目录相对路径，随服务一起本地加载 -->
+</head>
+<body>
+  <!-- 顶部栏：系统标题 + 当前登录身份 + 退出按钮 -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">东</span>              <!-- 品牌标识 -->
+      <div>
+        <h1>东湖门诊中心 · 预约与分诊协作</h1>
+        <p class="sub">智能辅助平台 · 推荐均需人工确认 · 数据本地保存</p>
+      </div>
+    </div>
+    <div class="who">
+      <span id="who-text" class="who-text">未登录</span>      <!-- 当前身份展示 -->
+      <button id="btn-logout" class="ghost" hidden>退出</button>  <!-- 登录后才显示 -->
+    </div>
+  </header>
+
+  <!-- 登录视图：四个演示账号一键登录，避免演示时手敲口令 -->
+  <main id="view-login" class="wrap">
+    <section class="card login-card">
+      <h2>登录</h2>
+      <p class="hint">演示账号已预置，点下方任一角色直接进入。口令仅用于本地校验，不上传任何外部服务。</p>
+      <div class="login-form">
+        <label>用户名<input id="login-user" value="patient01" autocomplete="off" /></label>
+        <label>口令<input id="login-pass" type="password" value="patient-pwd-01" /></label>
+        <button id="btn-login" class="primary">登录</button>
+      </div>
+      <div class="quick">
+        <button class="quick-btn" data-u="patient01" data-p="patient-pwd-01">患者 · 张三</button>
+        <button class="quick-btn" data-u="nurse01" data-p="nurse-pwd-01">分诊护士 · 林亦舟</button>
+        <button class="quick-btn" data-u="doctor01" data-p="doctor-pwd-01">科室医护 · 王济民</button>
+        <button class="quick-btn" data-u="admin01" data-p="admin-pwd-01">管理员</button>
+      </div>
+      <div id="login-msg" class="msg"></div>   <!-- 登录结果提示位 -->
+    </section>
+  </main>
+
+  <!-- 业务视图：登录后按角色显示对应面板 -->
+  <main id="view-app" class="wrap" hidden>
+    <nav class="tabs" id="tabs"></nav>          <!-- 角色内功能页签，由 JS 按角色渲染 -->
+
+    <!-- ============ 患者面板 ============ -->
+    <section class="panel" id="panel-patient-book" hidden>
+      <div class="card">
+        <h2>预约挂号</h2>
+        <p class="hint">提交后由预约平台落库；号源与排班一致性由核验智能体在护士端检查。</p>
+        <div class="grid">
+          <label>患者姓名<input id="bk-name" value="张三" /></label>
+          <label>手机号<input id="bk-phone" value="13812345678" /></label>
+          <label>病历号<input id="bk-medical" value="MZ20261101001" /></label>
+          <label>科室
+            <select id="bk-dept">
+              <option>全科门诊</option>
+              <option>内科门诊</option>
+            </select>
+          </label>
+          <label>医生
+            <select id="bk-doctor">
+              <option>王济民</option>
+              <option>钱有光</option>
+            </select>
+          </label>
+          <label>预约时段<input id="bk-time" type="datetime-local" /></label>
+        </div>
+        <button id="btn-book" class="primary">提交预约</button>
+        <div id="book-msg" class="msg"></div>
+      </div>
+      <div class="card">
+        <h2>我的预约</h2>
+        <p class="hint">接口返回已脱敏：姓名、手机号、病历号均打码。</p>
+        <button id="btn-my" class="secondary">刷新</button>
+        <div class="table-wrap"><table id="tbl-my"><thead></thead><tbody></tbody></table></div>
+      </div>
+    </section>
+
+    <!-- ============ 候诊进度（患者 / 护士共用） ============ -->
+    <section class="panel" id="panel-queue-check" hidden>
+      <div class="card">
+        <h2>候诊进度</h2>
+        <p class="hint">只展示位次与更新口径，不作实时承诺。</p>
+        <div class="row">
+          <input id="qc-apt" placeholder="预约号，如 APT-002" value="APT-002" />
+          <button id="btn-qc" class="primary">查询</button>
+        </div>
+        <div id="qc-out" class="result"></div>
+      </div>
+    </section>
+
+    <!-- ============ 队列（护士 / 医护 / 管理员共用） ============ -->
+    <section class="panel" id="panel-queue" hidden>
+      <div class="card">
+        <h2>叫号队列</h2>
+        <p class="hint">源自叫号系统只读视图；迟到 / 现场加号会单独标注，混队解释时必须显示原记录。</p>
+        <button id="btn-queue" class="secondary">刷新队列</button>
+        <div class="table-wrap"><table id="tbl-queue"><thead></thead><tbody></tbody></table></div>
+      </div>
+    </section>
+
+    <!-- ============ 护士：预约核验 + 分诊推荐 ============ -->
+    <section class="panel" id="panel-verify" hidden>
+      <div class="card">
+        <h2>预约核验智能体</h2>
+        <p class="hint">核验号源、排班、到院签到一致性。命中兜底场景（排班未同步 / 资料缺依据）时强制转人工。</p>
+        <div class="row">
+          <input id="vf-apt" value="APT-002" placeholder="预约号" />
+          <button id="btn-verify" class="primary">执行核验</button>
+        </div>
+        <div id="vf-out" class="result"></div>
+      </div>
+      <div class="card">
+        <h2>动态分诊推荐</h2>
+        <p class="hint">智能体只产出建议，状态恒为「待人工确认」，不改队列、不下诊疗结论。</p>
+        <div class="row">
+          <input id="tr-apt" value="APT-003" placeholder="预约号" />
+          <button id="btn-triage" class="primary">生成推荐</button>
+        </div>
+        <div id="tr-out" class="result"></div>
+        <div id="tr-actions" class="row" hidden>
+          <input id="tr-note" placeholder="人工改动/驳回理由（必填，质控留痕）" />
+          <button id="btn-confirm" class="primary">确认</button>
+          <button id="btn-reject" class="danger">驳回</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 护士 / 医护：协同提醒 ============ -->
+    <section class="panel" id="panel-notify" hidden>
+      <div class="card">
+        <h2>协同提醒 / 异常升级</h2>
+        <p class="hint">对患者的通知与对医护的升级都必须人工确认后发出，防止错误承诺。</p>
+        <div class="grid">
+          <label>通知类型
+            <select id="nt-type">
+              <option value="staff_escalation">医护升级（转人工）</option>
+              <option value="patient_reminder">患者候诊提醒</option>
+            </select>
+          </label>
+          <label>关联预约号<input id="nt-apt" value="APT-003" /></label>
+          <label>升级原因<input id="nt-reason" value="排班未同步" /></label>
+          <label>接手人<input id="nt-receiver" value="排班管理员" /></label>
+        </div>
+        <button id="btn-notify" class="primary">生成通知</button>
+        <div id="nt-out" class="result"></div>
+      </div>
+    </section>
+
+    <!-- ============ 医护：流量预判 ============ -->
+    <section class="panel" id="panel-forecast" hidden>
+      <div class="card">
+        <h2>流量预判</h2>
+        <p class="hint">基于历史分时人次与当前队列规模给出压力提示；只提示，不调度。</p>
+        <button id="btn-forecast" class="primary">执行预判</button>
+        <div id="fc-out" class="result"></div>
+      </div>
+    </section>
+
+    <!-- ============ 管理员：统计 + 审计 ============ -->
+    <section class="panel" id="panel-admin" hidden>
+      <div class="card">
+        <h2>运行统计</h2>
+        <button id="btn-stats" class="secondary">刷新</button>
+        <div id="st-cards" class="stat-grid"></div>
+      </div>
+      <div class="card">
+        <h2>审计留痕</h2>
+        <p class="hint">每次建议与调阅均留痕：业务编号、资料版本、事实引用、人工改动、签核人。调阅审计本身也会被记录。</p>
+        <div class="row">
+          <input id="au-biz" placeholder="按业务编号过滤，如 APT-002（可空）" />
+          <button id="btn-audit" class="primary">调阅</button>
+        </div>
+        <div class="table-wrap tall"><table id="tbl-audit"><thead></thead><tbody></tbody></table></div>
+      </div>
+    </section>
+
+    <div id="toast" class="toast" hidden></div>   <!-- 全局提示条 -->
+  </main>
+
+  <script src="./app.js"></script>  <!-- 交互逻辑：全部通过本机 API，无外部请求 -->
+</body>
+</html>
